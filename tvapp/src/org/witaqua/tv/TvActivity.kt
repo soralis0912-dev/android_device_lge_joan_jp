@@ -7,8 +7,11 @@ package org.witaqua.tv
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.res.Configuration
 import android.os.Bundle
 import android.text.InputType
+import android.util.TypedValue
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -19,6 +22,7 @@ import android.view.WindowManager
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.ScrollView
@@ -55,6 +59,7 @@ class TvActivity : Activity(), TvController.Ui, SurfaceHolder.Callback {
     /** A scan cancelled by tuning elsewhere must not re-tune afterwards. */
     private var stoppedByButton = false
     private val events = ArrayDeque<String>()
+    private var portrait = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,7 +88,7 @@ class TvActivity : Activity(), TvController.Ui, SurfaceHolder.Callback {
         channelList.choiceMode = ListView.CHOICE_MODE_SINGLE
         channelList.setOnItemClickListener { _, _, position, _ ->
             tuneTo(position)
-            channelPanel.visibility = View.GONE
+            if (!portrait) channelPanel.visibility = View.GONE
         }
         channelList.setOnItemLongClickListener { _, _, position, _ ->
             editChannel(position)
@@ -94,6 +99,7 @@ class TvActivity : Activity(), TvController.Ui, SurfaceHolder.Callback {
         findViewById<Button>(R.id.ch_up).setOnClickListener { step(1) }
         findViewById<Button>(R.id.ch_down).setOnClickListener { step(-1) }
         findViewById<Button>(R.id.show_channels).setOnClickListener {
+            if (portrait) return@setOnClickListener
             channelPanel.visibility =
                 if (channelPanel.visibility == View.VISIBLE) View.GONE else View.VISIBLE
         }
@@ -122,11 +128,17 @@ class TvActivity : Activity(), TvController.Ui, SurfaceHolder.Callback {
         updateMuteButton()
         updateChannelLabel()
         controller = TvController(this)
+        applyOrientation(resources.configuration)
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        applyOrientation(newConfig)
     }
 
     override fun onStart() {
         super.onStart()
-        hideSystemBars()
+        applySystemBars()
         autoTune = true
         controller.start(muted)
     }
@@ -340,7 +352,69 @@ class TvActivity : Activity(), TvController.Ui, SurfaceHolder.Callback {
     }
 
     private fun toggleChrome() {
+        // In portrait the controls and the list live below the picture.
+        if (portrait) return
         if (controls.visibility == View.VISIBLE) hideChrome() else showChrome()
+    }
+
+    /*
+     * Landscape: the picture fills the screen and the controls and channel
+     * list float over it. Portrait: a 16:9 picture at the top with the
+     * controls and the channel list stacked below it. The activity handles
+     * the rotation itself, so the connection and the tuned channel survive it;
+     * the SurfaceView's new size reaches the service through surfaceChanged.
+     */
+    private fun applyOrientation(config: Configuration) {
+        portrait = config.orientation == Configuration.ORIENTATION_PORTRAIT
+        val video = findViewById<SurfaceView>(R.id.video)
+        val match = FrameLayout.LayoutParams.MATCH_PARENT
+        val wrap = FrameLayout.LayoutParams.WRAP_CONTENT
+        if (portrait) {
+            val width = resources.displayMetrics.widthPixels
+            val videoHeight = width * 9 / 16
+            video.layoutParams = FrameLayout.LayoutParams(match, videoHeight, Gravity.TOP)
+            controls.layoutParams =
+                FrameLayout.LayoutParams(match, wrap, Gravity.TOP).apply { topMargin = videoHeight }
+            controls.visibility = View.VISIBLE
+            overlay.visibility = View.VISIBLE
+            channelPanel.visibility = View.VISIBLE
+            shareControlsWidth(true)
+            controls.post {
+                channelPanel.layoutParams = FrameLayout.LayoutParams(match, match, Gravity.TOP)
+                    .apply { topMargin = videoHeight + controls.height }
+            }
+        } else {
+            video.layoutParams = FrameLayout.LayoutParams(match, match, Gravity.CENTER)
+            controls.layoutParams = FrameLayout.LayoutParams(match, wrap, Gravity.BOTTOM)
+            channelPanel.layoutParams = FrameLayout.LayoutParams(
+                (280 * resources.displayMetrics.density).toInt(), match, Gravity.END)
+            channelPanel.visibility = View.GONE
+            shareControlsWidth(false)
+        }
+        applySystemBars()
+    }
+
+    /*
+     * The buttons do not fit across a portrait screen at their natural width,
+     * so there they share it equally on one line each. The channel list is
+     * always shown in portrait, which makes its toggle redundant there.
+     */
+    private fun shareControlsWidth(share: Boolean) {
+        findViewById<View>(R.id.show_channels).visibility = if (share) View.GONE else View.VISIBLE
+        val row = controls as LinearLayout
+        for (i in 0 until row.childCount) {
+            val child = row.getChildAt(i)
+            child.layoutParams = if (share) {
+                LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            } else {
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT)
+            }
+            if (child is Button) {
+                child.maxLines = 1
+                child.setTextSize(TypedValue.COMPLEX_UNIT_SP, if (share) 13f else 14f)
+            }
+        }
     }
 
     private fun showChrome() {
@@ -355,7 +429,7 @@ class TvActivity : Activity(), TvController.Ui, SurfaceHolder.Callback {
         if (state == TvController.State.WATCHING) overlay.visibility = View.GONE
     }
 
-    private fun hideSystemBars() {
+    private fun applySystemBars() {
         window.insetsController?.let {
             it.hide(WindowInsets.Type.systemBars())
             it.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
