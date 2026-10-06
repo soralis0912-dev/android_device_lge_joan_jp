@@ -1,0 +1,4 @@
+# JoanTv reaches the tuner through lgemtvserver's "broadcast.dmb" as a
+# platform-signed app rather than as the system uid.
+allow platform_app mtv_service:service_manager find;
+binder_call(platform_app, lgemtvserver)

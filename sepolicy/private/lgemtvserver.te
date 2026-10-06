@@ -1,0 +1,3 @@
+# Events and data come back to JoanTv through its IDmbClient binder, and the
+# video goes to the producer end of its surface.
+binder_call(lgemtvserver, platform_app)

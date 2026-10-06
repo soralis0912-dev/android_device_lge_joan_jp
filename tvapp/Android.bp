@@ -1,0 +1,26 @@
+//
+// SPDX-FileCopyrightText: 2026 The LineageOS Project
+// SPDX-License-Identifier: Apache-2.0
+//
+
+// An open-source ISDB-T (one-seg / full-seg) viewer for the japanese joan SKUs.
+// It talks to lgemtvserver's "broadcast.dmb" binder service directly - the
+// IDmbService / IDmb proxies and the IDmbClient stub are written in Kotlin
+// against the documented wire protocol - so it needs neither the stock
+// com.lge.broadcast.jfullseg jar nor libmtv_jnijp.lge, and carries no native
+// code: it runs as a 64-bit process.
+android_app {
+    name: "JoanTv",
+
+    srcs: ["src/**/*.kt"],
+    resource_dirs: ["res"],
+
+    // ServiceManager is a hidden API, and lgemtvserver's policy is written for
+    // the system uid (sharedUserId in the manifest needs the platform key).
+    certificate: "platform",
+    platform_apis: true,
+
+    optimize: {
+        enabled: false,
+    },
+}

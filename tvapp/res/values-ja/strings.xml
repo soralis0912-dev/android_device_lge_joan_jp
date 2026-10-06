@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <string name="app_name">テレビ</string>
+    <string name="channels">チャンネル</string>
+    <string name="no_channels">チャンネルがありません。イヤホン（アンテナ）ケーブルを挿してスキャンしてください。</string>
+    <string name="scan">スキャン</string>
+    <string name="cancel_scan">スキャン中止</string>
+    <string name="ch_up">CH +</string>
+    <string name="ch_down">CH −</string>
+    <string name="mute">消音</string>
+    <string name="unmute">消音解除</string>
+    <string name="reconnect">再接続</string>
+
+    <string name="state_disconnected">未接続</string>
+    <string name="state_no_service">テレビサービスが見つかりません</string>
+    <string name="state_idle">待機中</string>
+    <string name="state_scanning">スキャン中</string>
+    <string name="state_watching">視聴中</string>
+    <string name="state_dead">テレビサービスが停止しました</string>
+
+    <string name="signal_lock">受信: ロック</string>
+    <string name="signal_unlock">受信: ロックなし</string>
+    <string name="scan_progress">UHF %1$d ch をスキャン中（%2$d 件）</string>
+    <string name="scan_done">スキャン完了: %1$d 件</string>
+    <string name="scan_cancelled">スキャン中止: %1$d 件</string>
+
+    <string name="edit_channel">チャンネルの編集</string>
+    <string name="delete_channel">削除</string>
+    <string name="save">保存</string>
+    <string name="field_name">名前</string>
+    <string name="field_service_id">サービス ID</string>
+    <string name="field_service_type">サービス種別</string>
+    <string name="field_service_id_1seg">ワンセグ サービス ID</string>
+    <string name="field_pmt_pid">PMT PID</string>
+    <string name="field_video_pid">映像 PID</string>
+    <string name="field_audio_pid">音声 PID</string>
+</resources>

@@ -65,3 +65,7 @@ PRODUCT_SOONG_NAMESPACES += \
 
 # Inherit proprietary blobs
 $(call inherit-product, vendor/lge/joan_jp/joan_jp-vendor.mk)
+
+# TV
+PRODUCT_PACKAGES += \
+    JoanTv

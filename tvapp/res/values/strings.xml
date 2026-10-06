@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+     SPDX-FileCopyrightText: 2026 The LineageOS Project
+     SPDX-License-Identifier: Apache-2.0
+-->
+<resources>
+    <string name="app_name">TV</string>
+    <string name="channels">Channels</string>
+    <string name="no_channels">No channels yet. Run a scan with the earphone (antenna) cable plugged in.</string>
+    <string name="scan">Scan</string>
+    <string name="cancel_scan">Stop scan</string>
+    <string name="ch_up">CH +</string>
+    <string name="ch_down">CH −</string>
+    <string name="mute">Mute</string>
+    <string name="unmute">Unmute</string>
+    <string name="reconnect">Reconnect</string>
+
+    <string name="state_disconnected">Disconnected</string>
+    <string name="state_no_service">TV service not available</string>
+    <string name="state_idle">Ready</string>
+    <string name="state_scanning">Scanning</string>
+    <string name="state_watching">Watching</string>
+    <string name="state_dead">TV service stopped</string>
+
+    <string name="signal_lock">Signal: locked</string>
+    <string name="signal_unlock">Signal: no lock</string>
+    <string name="scan_progress">Scanning UHF %1$d (%2$d found)</string>
+    <string name="scan_done">Scan finished: %1$d channels</string>
+    <string name="scan_cancelled">Scan stopped: %1$d channels</string>
+
+    <string name="edit_channel">Edit channel</string>
+    <string name="delete_channel">Delete</string>
+    <string name="save">Save</string>
+    <string name="field_name">Name</string>
+    <string name="field_service_id">Service ID</string>
+    <string name="field_service_type">Service type</string>
+    <string name="field_service_id_1seg">1seg service ID</string>
+    <string name="field_pmt_pid">PMT PID</string>
+    <string name="field_video_pid">Video PID</string>
+    <string name="field_audio_pid">Audio PID</string>
+</resources>
